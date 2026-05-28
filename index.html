@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Динамично CV Генератор</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .form-panel {
+            flex: 1.2;
+            min-width: 350px;
+            background: #f8f9fc;
+            padding: 24px;
+            overflow-y: auto;
+            max-height: 90vh;
+            border-right: 1px solid #ddd;
+        }
+
+        .form-panel h2 {
+            margin-top: 0;
+            color: #2c3e66;
+            border-bottom: 2px solid #d4d4d4;
+            padding-bottom: 8px;
+        }
+
+        .form-section {
+            margin-bottom: 28px;
+            background: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .form-section h3 {
+            margin: 0 0 12px 0;
+            font-size: 18px;
+            color: #1e3c72;
+            border-left: 4px solid #d4d4d4;
+            padding-left: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .add-btn {
+            background: #2c7a47;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .add-btn:hover {
+            background: #1e5a36;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 12px;
+            margin-bottom: 4px;
+            color: #333;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #1e3c72;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(30,60,114,0.2);
+        }
+
+        .work-item, .edu-item {
+            background: #f1f3f7;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .remove-btn {
+            background: #c0392b;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 11px;
+            margin-top: 8px;
+        }
+
+        .remove-btn:hover {
+            background: #a93226;
+        }
+
+        button {
+            background: #2c3e66;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 16px;
+            margin-right: 12px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #1a2a4f;
+            transform: scale(1.02);
+        }
+
+        .download-btn {
+            background: #2c7a47;
+        }
+
+        .download-btn:hover {
+            background: #1e5a36;
+        }
+
+        .preview-panel {
+            flex: 1;
+            min-width: 450px;
+            background: #eaeef3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px;
+            overflow-x: auto;
+        }
+
+        .preview-panel h2 {
+            color: #2c3e66;
+            margin-top: 0;
+        }
+
+        .svg-container {
+            background: white;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            overflow-x: auto;
+            min-width: 650px;
+        }
+
+        svg {
+            display: block;
+        }
+
+        .error-note {
+            font-size: 12px;
+            color: #c0392b;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="form-panel">
+        <h2>📝 Редактирай CV</h2>
+
+        <!-- ЛИЧНИ ДАННИ -->
+        <div class="form-section">
+            <h3>👤 Лични данни</h3>
+            <label>Имена</label>
+            <input type="text" id="fullName" value="ИВАН ПЕТРОВ">
+            <label>Телефон</label>
+            <input type="text" id="phoneInput" value="+359 888 123 456">
+            <label>Имейл</label>
+            <input type="email" id="emailInput" value="ivan.petrov@example.com">
+            <label>Адрес (ред 1)</label>
+            <input type="text" id="address1" value="Обл.София Гр.София">
+            <label>Адрес (ред 2)</label>
+            <input type="text" id="address2" value="Ул.Витошка 15, Вх Б">
+        </div>
+
+        <!-- ОБРАЗОВАНИЕ (динамично) -->
+        <div class="form-section">
+            <h3>🎓 Образование <button type="button" class="add-btn" onclick="addEducation()">+ Добави</button></h3>
+            <div id="educationList"></div>
+        </div>
+
+        <!-- УМЕНИЯ -->
+        <div class="form-section">
+            <h3>⚙️ Умения</h3>
+            <div id="skillsContainer">
+                <input type="text" class="skill-input" value="JavaScript / TypeScript" placeholder="Умение 1">
+                <input type="text" class="skill-input" value="React & Vue" placeholder="Умение 2">
+                <input type="text" class="skill-input" value="Python / Django" placeholder="Умение 3">
+                <input type="text" class="skill-input" value="UI/UX принципи" placeholder="Умение 4">
+                <input type="text" class="skill-input" value="Екипна работа" placeholder="Умение 5">
+            </div>
+            <button type="button" class="add-btn" onclick="addSkill()" style="margin-top:8px">+ Добави умение</button>
+        </div>
+
+        <!-- СЕРТИФИКАТИ -->
+        <div class="form-section">
+            <h3>📜 Сертификати</h3>
+            <div id="certsContainer">
+                <input type="text" class="cert-input" value="AWS Certified Practitioner">
+                <input type="text" class="cert-input" value="JavaScript Advanced - SoftUni">
+                <input type="text" class="cert-input" value="ИКАР - Киберсигурност">
+            </div>
+            <button type="button" class="add-btn" onclick="addCert()" style="margin-top:8px">+ Добави сертификат</button>
+        </div>
+
+        <!-- ЕЗИЦИ -->
+        <div class="form-section">
+            <h3>🗣️ Езици</h3>
+            <div id="langsContainer">
+                <input type="text" class="lang-input" value="Български (C2)">
+                <input type="text" class="lang-input" value="Английски (C1)">
+                <input type="text" class="lang-input" value="Немски (B1)">
+            </div>
+            <button type="button" class="add-btn" onclick="addLanguage()" style="margin-top:8px">+ Добави език</button>
+        </div>
+
+        <!-- РАБОТЕН ОПИТ (динамично) -->
+        <div class="form-section">
+            <h3>💼 Работен опит <button type="button" class="add-btn" onclick="addWork()">+ Добави позиция</button></h3>
+            <div id="workList"></div>
+        </div>
+
+        <div>
+            <button id="generateBtn">🔄 Генерирай CV</button>
+            <button id="downloadBtn" class="download-btn">⬇️ Изтегли като SVG</button>
+        </div>
+        <div class="error-note" id="validationMsg"></div>
+    </div>
+
+    <div class="preview-panel">
+        <h2>📄 Преглед на CV</h2>
+        <div class="svg-container" id="svgPreview"></div>
+    </div>
+</div>
+
+<script>
+    // Динамични масиви за съхранение на данни
+    let workItems = [];
+    let educationItems = [];
+    let skills = [];
+    let certificates = [];
+    let languages = [];
+
+    // Инициализация с примерни данни
+    function initData() {
+        workItems = [
+            { years: "2022-2024", company: "ТехноЛогика АД", position: "Frontend Lead - отговорност едно, две", activities: "Разработване на UI компоненти, менторство" },
+            { years: "2020-2022", company: "ИноваСофт ЕООД", position: "Full-stack Developer - отговорност едно, две", activities: "Разработка на API и клиентска част" },
+            { years: "2018-2020", company: "УебСтудио 'Код'", position: "Junior Developer - отговорност едно", activities: "Поддръжка на WordPress сайтове" },
+            { years: "2016-2018", company: "Стартъп Лаб", position: "Стажант QA - тестове, документация", activities: "Функционално тестване, баги репорти" }
+        ];
+        
+        educationItems = [
+            { start: "2015", end: "2020", type: "МАГИСТЪР", name: "СУ 'Св. Климент Охридски'", city: "София" }
+        ];
+        
+        skills = ["JavaScript / TypeScript", "React & Vue", "Python / Django", "UI/UX принципи", "Екипна работа"];
+        certificates = ["AWS Certified Practitioner", "JavaScript Advanced - SoftUni", "ИКАР - Киберсигурност"];
+        languages = ["Български (C2)", "Английски (C1)", "Немски (B1)"];
+        
+        renderForms();
+    }
+    
+    function renderForms() {
+        renderWorkForm();
+        renderEducationForm();
+        renderSkillsForm();
+        renderCertsForm();
+        renderLangsForm();
+    }
+    
+    function renderWorkForm() {
+        const container = document.getElementById('workList');
+        container.innerHTML = '';
+        workItems.forEach((item, idx) => {
+            const div = document.createElement('div');
+            div.className = 'work-item';
+            div.innerHTML = `
+                <label>Години (XXXX-XXXX)</label>
+                <input type="text" class="work-years" value="${escapeHtml(item.years)}">
+                <label>Компания</label>
+                <input type="text" class="work-company" value="${escapeHtml(item.company)}">
+                <label>Позиция (отговорности)</label>
+                <input type="text" class="work-position" value="${escapeHtml(item.position)}">
+                <label>Дейности и задачи</label>
+                <input type="text" class="work-activities" value="${escapeHtml(item.activities)}">
+                <button class="remove-btn" onclick="removeWork(${idx})">✖ Премахни</button>
+            `;
+            container.appendChild(div);
+        });
+    }
+    
+    function renderEducationForm() {
+        const container = document.getElementById('educationList');
+        container.innerHTML = '';
+        educationItems.forEach((item, idx) => {
+            const div = document.createElement('div');
+            div.className = 'edu-item';
+            div.innerHTML = `
+                <label>Начална година</label>
+                <input type="text" class="edu-start" value="${escapeHtml(item.start)}">
+                <label>Крайна година</label>
+                <input type="text" class="edu-end" value="${escapeHtml(item.end)}">
+                <label>Тип училище/университет</label>
+                <input type="text" class="edu-type" value="${escapeHtml(item.type)}">
+                <label>Име на училище</label>
+                <input type="text" class="edu-name" value="${escapeHtml(item.name)}">
+                <label>Град</label>
+                <input type="text" class="edu-city" value="${escapeHtml(item.city)}">
+                <button class="remove-btn" onclick="removeEducation(${idx})">✖ Премахни</button>
+            `;
+            container.appendChild(div);
+        });
+    }
+    
+    function renderSkillsForm() {
+        const container = document.getElementById('skillsContainer');
+        container.innerHTML = skills.map(s => `<input type="text" class="skill-input" value="${escapeHtml(s)}">`).join('');
+    }
+    
+    function renderCertsForm() {
+        const container = document.getElementById('certsContainer');
+        container.innerHTML = certificates.map(c => `<input type="text" class="cert-input" value="${escapeHtml(c)}">`).join('');
+    }
+    
+    function renderLangsForm() {
+        const container = document.getElementById('langsContainer');
+        container.innerHTML = languages.map(l => `<input type="text" class="lang-input" value="${escapeHtml(l)}">`).join('');
+    }
+    
+    function saveFromForms() {
+        // Събиране на работен опит от формите
+        const workDivs = document.querySelectorAll('#workList .work-item');
+        workItems = [];
+        workDivs.forEach(div => {
+            workItems.push({
+                years: div.querySelector('.work-years')?.value || '',
+                company: div.querySelector('.work-company')?.value || '',
+                position: div.querySelector('.work-position')?.value || '',
+                activities: div.querySelector('.work-activities')?.value || ''
+            });
+        });
+        
+        // Образование
+        const eduDivs = document.querySelectorAll('#educationList .edu-item');
+        educationItems = [];
+        eduDivs.forEach(div => {
+            educationItems.push({
+                start: div.querySelector('.edu-start')?.value || '',
+                end: div.querySelector('.edu-end')?.value || '',
+                type: div.querySelector('.edu-type')?.value || '',
+                name: div.querySelector('.edu-name')?.value || '',
+                city: div.querySelector('.edu-city')?.value || ''
+            });
+        });
+        
+        // Умения
+        skills = Array.from(document.querySelectorAll('#skillsContainer .skill-input')).map(inp => inp.value);
+        
+        // Сертификати
+        certificates = Array.from(document.querySelectorAll('#certsContainer .cert-input')).map(inp => inp.value);
+        
+        // Езици
+        languages = Array.from(document.querySelectorAll('#langsContainer .lang-input')).map(inp => inp.value);
+    }
+    
+    function addWork() {
+        workItems.push({ years: "XXXX-XXXX", company: "Нова компания", position: "Позиция", activities: "Дейности" });
+        renderWorkForm();
+        updatePreview();
+    }
+    
+    function removeWork(idx) {
+        workItems.splice(idx, 1);
+        renderWorkForm();
+        updatePreview();
+    }
+    
+    function addEducation() {
+        educationItems.push({ start: "XXXX", end: "XXXX", type: "ТИП", name: "Име на училище", city: "Град" });
+        renderEducationForm();
+        updatePreview();
+    }
+    
+    function removeEducation(idx) {
+        educationItems.splice(idx, 1);
+        renderEducationForm();
+        updatePreview();
+    }
+    
+    function addSkill() {
+        skills.push("Ново умение");
+        renderSkillsForm();
+        updatePreview();
+    }
+    
+    function addCert() {
+        certificates.push("Нов сертификат");
+        renderCertsForm();
+        updatePreview();
+    }
+    
+    function addLanguage() {
+        languages.push("Нов език");
+        renderLangsForm();
+        updatePreview();
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    function escapeXml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    // Генериране на SVG с фиксирани Y координати
+    function generateSVG() {
+        saveFromForms();
+        
+        // Валидация
+        const phoneRaw = document.getElementById('phoneInput').value;
+        const phoneRegex = /^[\+]?[0-9\s\-\(\)]{7,20}$/;
+        const emailRaw = document.getElementById('emailInput').value;
+        const emailRegex = /^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/;
+        
+        if (!phoneRegex.test(phoneRaw)) {
+            document.getElementById('validationMsg').innerText = "⚠️ Невалиден телефонен номер";
+        } else if (!emailRegex.test(emailRaw) && emailRaw.trim() !== "") {
+            document.getElementById('validationMsg').innerText = "⚠️ Невалиден имейл формат";
+        } else {
+            document.getElementById('validationMsg').innerText = "";
+        }
+        
+        // Фиксирана ширина и височина - изчисляваме динамична височина
+        let currentY = 5; // начална позиция за име
+        
+        // Базов шаблон (без динамичните секции)
+        let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 1000" width="100%" height="auto">
+<style>
+    text { font-family: 'Courier New', Courier, monospace; }
+    .heading { font-size: 9px; font-weight: bolder; }
+    .subheading { font-size: 7px; }
+    .value { font-size: 4px; }
+</style>
+<rect width="100%" height="100%" fill="white"/>
+<rect width="35%" height="100%" fill="#d4d4d4"/>
+<circle cx="36.75" cy="30" r="25" fill="#cccccc"/>
+
+<clipPath id="profileClip"><circle cx="36.75" cy="30" r="25"/></clipPath>
+<image x="11.75" y="5" width="50" height="50" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23888888'/%3E%3Ctext x='50' y='67' font-size='20' text-anchor='middle' fill='white'%3E📸%3C/text%3E%3C/svg%3E" clip-path="url(#profileClip)"/>
+
+<!-- ЛЯВА ЧАСТ - ФИКСИРАНИ X=2% (4.2px при 210 ширина) но ползваме px -->
+<text x="4" y="70" class="heading"> Контакти </text>
+<text x="4" y="80" class="subheading"> Телефон </text>
+<text x="4" y="87" class="value" id="phone">${escapeXml(phoneRaw)}</text>
+<text x="4" y="97" class="subheading"> Имейл адрес </text>
+<text x="4" y="104" class="value" id="email">${escapeXml(emailRaw)}</text>
+<text x="4" y="114" class="subheading"> Адрес </text>
+<text x="4" y="121" class="value" id="add1">${escapeXml(document.getElementById('address1').value)}</text>
+<text x="4" y="128" class="value" id="add2">${escapeXml(document.getElementById('address2').value)}</text>
+`;
+        
+        // Образование - динамично
+        let eduY = 145;
+        svg += `<text x="4" y="${eduY}" class="heading"> Образование </text>`;
+        eduY += 15;
+        
+        educationItems.forEach(edu => {
+            svg += `<text x="4" y="${eduY}" class="subheading">${escapeXml(edu.start)} - ${escapeXml(edu.end)}</text>`;
+            eduY += 12;
+            svg += `<text x="4" y="${eduY}" class="value" font-weight="bold">${escapeXml(edu.type)}</text>`;
+            eduY += 10;
+            svg += `<text x="4" y="${eduY}" class="value">${escapeXml(edu.name)}</text>`;
+            eduY += 10;
+            svg += `<text x="4" y="${eduY}" class="value">${escapeXml(edu.city)}</text>`;
+            eduY += 18;
+        });
+        
+        // Умения
+        svg += `<text x="4" y="${eduY}" class="heading">Умения</text>`;
+        eduY += 15;
+        skills.forEach(skill => {
+            svg += `<text x="4" y="${eduY}" class="value">• ${escapeXml(skill)}</text>`;
+            eduY += 10;
+        });
+        eduY += 8;
+        
+        // Сертификати
+        svg += `<text x="4" y="${eduY}" class="heading">СЕРТИФИКАТИ</text>`;
+        eduY += 15;
+        certificates.forEach(cert => {
+            svg += `<text x="4" y="${eduY}" class="value">${escapeXml(cert)}</text>`;
+            eduY += 12;
+        });
+        eduY += 8;
+        
+        // Езици
+        svg += `<text x="4" y="${eduY}" class="subheading">ЕЗИЦИ</text>`;
+        eduY += 12;
+        languages.forEach(lang => {
+            svg += `<text x="4" y="${eduY}" class="value">${escapeXml(lang)}</text>`;
+            eduY += 10;
+        });
+        
+        // ДЯСНА ЧАСТ (от X=85px)
+        let rightY = 20;
+        svg += `<text x="85" y="${rightY}" font-size="12px" font-weight="bold">${escapeXml(document.getElementById('fullName').value)}</text>`;
+        rightY += 25;
+        svg += `<text x="85" y="${rightY}" class="heading">РАБОТЕН ОПИТ</text>`;
+        rightY += 20;
+        
+        workItems.forEach(work => {
+            svg += `<text x="85" y="${rightY}" class="subheading">${escapeXml(work.years)}</text>`;
+            rightY += 13;
+            svg += `<text x="85" y="${rightY}" class="subheading" font-weight="bold">${escapeXml(work.company)}</text>`;
+            rightY += 12;
+            svg += `<text x="85" y="${rightY}" class="value" font-weight="bold">${escapeXml(work.position)}</text>`;
+            rightY += 10;
+            svg += `<text x="85" y="${rightY}" class="value">${escapeXml(work.activities)}</text>`;
+            rightY += 22;
+        });
+        
+        // Изчисляваме обща височина
+        const totalHeight = Math.max(rightY + 50, eduY + 50, 400);
+        svg = svg.replace('viewBox="0 0 210 1000"', `viewBox="0 0 210 ${totalHeight}"`);
+        svg += `</svg>`;
+        
+        return svg;
+    }
+    
+    function updatePreview() {
+        const svgContent = generateSVG();
+        document.getElementById('svgPreview').innerHTML = svgContent;
+    }
+    
+    function downloadSVG() {
+        const svgString = generateSVG();
+        const blob = new Blob([svgString], { type: 'image/svg+xml' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.href = url;    
+        link.download = 'dynamic_cv.svg';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+    
+    // Свързване на събития
+    document.getElementById('generateBtn').addEventListener('click', updatePreview);
+    document.getElementById('downloadBtn').addEventListener('click', downloadSVG);
+    
+    // Инициализация
+    initData();
+    updatePreview();
+</script>
+</body>
+</html>

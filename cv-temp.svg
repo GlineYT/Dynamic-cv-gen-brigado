@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 297">
+
+<style>
+    text{
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+    .heading{
+        font-size: 9px;
+        font-weight: bolder;
+    }
+
+    .subheading{
+        font-size: 7px;
+    }
+
+    .value{
+        font-size: 4px;
+    }
+</style>
+
+<rect width="100%" height="100%" fill="white"/> <!-- Бял фон -->
+<rect width="35%" height="100%" fill="#d4d4d4"/> 
+<circle cx="17.5%" cy="10%" r="25" fill="red"/> <!-- Профилна снимка -->
+
+<!-- ЛЯВА ЧАСТ -->
+
+        
+<clipPath id="profileClip"><circle cx="17.5%"  cy="10%" r="25"/></clipPath>
+<text x="10%" y="10%" font-size="5px" id="pic" > СНИМКА ТУКА </text>
+<image x="5.6%" y="1.6%" width="50px" height="50px" href="./placeholder.png" clip-path="url(#profileClip)"/>
+
+
+<text x="2%" y="23%" class="heading" id="contact-heading" > Контакти </text>
+
+<text x="2%" y="26%" class="subheading"> Телефон </text>
+<text x="2%" y="27.5%" class="value" id="phone"> +359 123 456 789  </text> <!-- Телефон, regex проверка -->
+
+
+<text x="2%" y="31%" class="subheading"> Имейл адрес </text>
+<text x="2%" y="32.5%" class="value" id="email"> email@domain.tld  </text> <!-- Имейл, regex проверка -->
+
+<text x="2%" y="36%" class="subheading"> Адрес </text>
+<text x="2%" y="38%" class="value" id="add1" >Обл.Област Гр.Град</text> <!-- Адрес-->
+<text x="2%" y="40%" class="value" id="add2" >Ул.Улица 123, Вх А </text> <!-- Адрес-->
+
+<!-- ОБРАЗОВАНИЕ -->
+
+<text x="2%" y="45%" class="heading"> Образование </text> 
+
+<!-- ГОДИНИ НА ОБРАЗОВАНИЕ -->
+<text x="2%" y="48%" class="subheading" id="edustart">XXXX</text>
+<text x="11.5%" y="48%" class="subheading" id="edusdash">-</text>
+<text x="15%" y="48%" class="subheading" id="eduend">XXXX</text>
+
+<!-- МЯСТНО НА ОБАЗОВАНИЕ -->
+<text x="2%" y="50.5%" class="value" id="edutype">ТИП УЧИЛИЩЕ</text>
+<text x="2%" y="52.5%" class="value" id="eduname">ИМЕ НА УЧИЛИЩЕ</text>
+<text x="2%" y="54.5%" class="value" id="educity">ГРАД НА УЧИЛИЩЕ</text>
+
+<!-- УМЕНИЯ -->
+<text x="2%" y="59.5%" class="heading" id="skillheading">Умения</text>
+
+<text x="2%" y="62%" class="value" id="bullet1" >• Умение1  </text>
+<text x="2%" y="64%" class="value" id="bullet2" >• Умение2  </text> 
+<text x="2%" y="66%" class="value" id="bullet3" >• Умение3  </text> 
+<text x="2%" y="68%" class="value" id="bullet4" >• Умение4  </text> 
+<text x="2%" y="70%" class="value" id="bullet5" >• Умение5  </text>
+
+<!-- СЕРТИФИКАТИ -->
+<text x="2%" y="75%" class="heading" id="certheading">СЕРТИФИКАТИ</text>
+<text x="2%" y="77%" class="value" id="cert1 "> === СЕРТИФИКАТ 1 ===</text>
+<text x="2%" y="83%" class="value" id="cert2 "> === СЕРТИФИКАТ 2 ===</text>
+<text x="2%" y="89%" class="value" id="cert3 "> === СЕРТИФИКАТ 3 ===</text>
+
+<!-- ЕЗИЦИ -->
+<text x="2%" y="93%" class="subheading">ЕЗИЦИ</text>
+<text x="2%" y="95%" class="value" id="lang1" >ЕЗИК 1</text>
+<text x="2%" y="97%" class="value" id="lang2" >ЕЗИК 2</text>
+<text x="2%" y="99%" class="value" id="lang" >ЕЗИК 3</text>
+
+
+<!-- ИМЕНА -->
+<text x="40%" y="5%" id="name" font-size="12px" >ИМЕНА</text>
+
+<!-- ОПИТ -->
+<text x="40%" y="15%"  class="heading" >РАБОТЕН ОПИТ</text>
+
+<!-- СЕКЦИЯ 1 - най-отгоре -->
+<text x="40%" y="20%"  class="subheading" id="year-section1" >XXXX-XXXX</text>
+<text x="40%" y="23%"  class="subheading" id="company-section1" >Компания</text>
+<text x="40%" y="25.5%"  class="value" id="position-section1" font-weight="bold" >Позиция - отговорност едно, две, три, четири</text>
+<text x="40%" y="28%"  class="value" id="activity-section1" >Дейности и задачи по позицията</text>
+
+<!-- СЕКЦИЯ 2 -->
+<text x="40%" y="34%"  class="subheading" id="year-section2" >XXXX-XXXX</text>
+<text x="40%" y="37%"  class="subheading" id="company-section2" >Компания</text>
+<text x="40%" y="39.5%"  class="value" id="position-section2" font-weight="bold" >Позиция - отговорност едно, две, три, четири</text>
+<text x="40%" y="42%"  class="value" id="activity-section2" >Дейности и задачи по позицията</text>
+
+<!-- СЕКЦИЯ 3 -->
+<text x="40%" y="48%"  class="subheading" id="year-section3" >XXXX-XXXX</text>
+<text x="40%" y="51%"  class="subheading" id="company-section3" >Компания</text>
+<text x="40%" y="53.5%"  class="value" id="position-section3" font-weight="bold" >Позиция - отговорност едно, две, три, четири</text>
+<text x="40%" y="56%"  class="value" id="activity-section3" >Дейности и задачи по позицията</text>
+
+<!-- СЕКЦИЯ 4 - най-отдолу -->
+<text x="40%" y="62%"  class="subheading" id="year-section4" >XXXX-XXXX</text>
+<text x="40%" y="65%"  class="subheading" id="company-section4" >Компания</text>
+<text x="40%" y="67.5%"  class="value" id="position-section4" font-weight="bold" >Позиция - отговорност едно, две, три, четири</text>
+<text x="40%" y="70%"  class="value" id="activity-section4" >Дейности и задачи по позицията</text>
+
+</svg>
