@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Responsive CV Generator - Collapsible Preview</title>
+    <title>Responsive CV Generator - Снимка</title>
     <style>
         * {
             box-sizing: border-box;
@@ -30,7 +30,6 @@
             flex-wrap: wrap;
         }
 
-        /* FORM PANEL - responsive */
         .form-panel {
             flex: 1.2;
             min-width: 280px;
@@ -119,6 +118,65 @@
             box-shadow: 0 0 0 2px rgba(30,60,114,0.2);
         }
 
+        /* Стилове за качване на снимка */
+        .photo-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .photo-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin: 0 auto;
+            border: 3px solid #d4d4d4;
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-preview .placeholder {
+            font-size: 40px;
+            color: #999;
+        }
+
+        .upload-btn {
+            background: #2c3e66;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .upload-btn:hover {
+            background: #1a2a4f;
+        }
+
+        .remove-photo-btn {
+            background: #c0392b;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
         .work-item, .edu-item {
             background: #f1f3f7;
             padding: 12px;
@@ -185,7 +243,6 @@
             background: #a93226;
         }
 
-        /* PREVIEW PANEL - collapsible */
         .preview-panel {
             flex: 1;
             min-width: 320px;
@@ -252,19 +309,16 @@
             overflow-y: auto;
             width: 100%;
             max-height: 70vh;
-            /* Важно: махаме display: flex и justify-content */
             display: block;
         }
 
         .svg-container svg {
             display: block;
-            /* Минимална ширина, за да може да се скролва */
             min-width: 210px;
             width: 100%;
             height: auto;
         }
 
-        /* Scrollbar styling for SVG container */
         .svg-container::-webkit-scrollbar {
             width: 10px;
             height: 10px;
@@ -298,7 +352,6 @@
             text-align: center;
         }
 
-        /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -318,12 +371,6 @@
             background: #555;
         }
 
-        .loading {
-            opacity: 0.6;
-            pointer-events: none;
-        }
-
-        /* Responsive adjustments */
         @media (max-width: 768px) {
             .svg-container {
                 max-height: 50vh;
@@ -344,6 +391,21 @@
 
         <div class="form-section">
             <h3>👤 Лични данни</h3>
+            
+            <!-- Секция за качване на снимка -->
+            <label>📸 Профилна снимка</label>
+            <div class="photo-upload">
+                <div class="photo-preview" id="photoPreview">
+                    <div class="placeholder">📷</div>
+                </div>
+                <input type="file" id="photoInput" accept="image/jpeg,image/png,image/jpg,image/gif" style="display: none;">
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="upload-btn" onclick="document.getElementById('photoInput').click()">📁 Избери снимка</button>
+                    <button type="button" class="remove-photo-btn" onclick="removePhoto()">🗑 Премахни</button>
+                </div>
+                <small style="color: #666; font-size: 10px;">Поддържани формати: JPG, PNG, GIF</small>
+            </div>
+            
             <label>Имена</label>
             <input type="text" id="fullName" value="ИВАН ПЕТРОВ" placeholder="Иван Петров">
             <label>Телефон</label>
@@ -416,6 +478,7 @@
     let certificates = [];
     let languages = [];
     let isPreviewCollapsed = false;
+    let currentPhotoDataURL = null; // Запазваме снимката като Data URL
 
     function initData() {
         workItems = [
@@ -434,6 +497,55 @@
         languages = ["Български (C2)", "Английски (C1)", "Немски (B1)"];
         
         renderForms();
+    }
+    
+    // Функция за качване на снимка
+    function setupPhotoUpload() {
+        const photoInput = document.getElementById('photoInput');
+        photoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    currentPhotoDataURL = event.target.result;
+                    updatePhotoPreview();
+                    updatePreview(); // Обновяваме CV-то с новата снимка
+                    showSuccess("Снимката беше качена успешно!");
+                };
+                reader.readAsDataURL(file);
+            } else {
+                showError("Моля, изберете валиден файл със снимка!");
+            }
+        });
+    }
+    
+    function updatePhotoPreview() {
+        const previewDiv = document.getElementById('photoPreview');
+        if (currentPhotoDataURL) {
+            previewDiv.innerHTML = `<img src="${currentPhotoDataURL}" alt="Profile photo">`;
+        } else {
+            previewDiv.innerHTML = '<div class="placeholder">📷</div>';
+        }
+    }
+    
+    function removePhoto() {
+        currentPhotoDataURL = null;
+        document.getElementById('photoInput').value = ''; // Изчистваме избрания файл
+        updatePhotoPreview();
+        updatePreview();
+        showSuccess("Снимката беше премахната!");
+    }
+    
+    function showSuccess(message) {
+        const successMsg = document.getElementById('successMsg');
+        successMsg.innerText = "✅ " + message;
+        setTimeout(() => { successMsg.innerText = ""; }, 3000);
+    }
+    
+    function showError(message) {
+        const errorMsg = document.getElementById('validationMsg');
+        errorMsg.innerText = "❌ " + message;
+        setTimeout(() => { errorMsg.innerText = ""; }, 3000);
     }
     
     function renderForms() {
@@ -639,6 +751,9 @@
         
         const totalHeight = Math.max(leftY + eduSectionHeight + skillsHeight + certsHeight + langsHeight + 100, rightY + workHeight + 100, 500);
         
+        // Използваме качената снимка или placeholder
+        const photoSrc = currentPhotoDataURL || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23888888'/%3E%3Ctext x='50' y='67' font-size='20' text-anchor='middle' fill='white'%3E📸%3C/text%3E%3C/svg%3E";
+        
         let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 ${totalHeight}" width="100%" height="auto">
 <style>
     text { font-family: 'Courier New', Courier, monospace; }
@@ -652,7 +767,7 @@
 <circle cx="36.75" cy="30" r="25" fill="#cccccc"/>
 
 <clipPath id="profileClip"><circle cx="36.75" cy="30" r="25"/></clipPath>
-<image x="11.75" y="5" width="50" height="50" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23888888'/%3E%3Ctext x='50' y='67' font-size='20' text-anchor='middle' fill='white'%3E📸%3C/text%3E%3C/svg%3E" clip-path="url(#profileClip)"/>
+<image x="11.75" y="5" width="50" height="50" href="${escapeXml(photoSrc)}" clip-path="url(#profileClip)"/>
 
 <text x="4" y="70" class="heading"> КОНТАКТИ </text>
 <text x="4" y="80" class="subheading"> Телефон </text>
@@ -740,9 +855,7 @@
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
         
-        const successMsg = document.getElementById('successMsg');
-        successMsg.innerText = "✅ SVG файлът беше изтеглен успешно!";
-        setTimeout(() => { successMsg.innerText = ""; }, 3000);
+        showSuccess("SVG файлът беше изтеглен успешно!");
     }
     
     async function exportToPDF() {
@@ -750,7 +863,7 @@
         const svgElement = previewDiv.querySelector('svg');
         
         if (!svgElement) {
-            document.getElementById('validationMsg').innerText = "❌ Няма генерирано CV за експорт!";
+            showError("Няма генерирано CV за експорт!");
             return;
         }
         
@@ -760,7 +873,7 @@
         pdfBtn.disabled = true;
         
         try {
-            document.getElementById('successMsg').innerText = "⏳ Подготвяне на PDF, моля изчакайте...";
+            showSuccess("⏳ Подготвяне на PDF, моля изчакайте...");
             
             const clonedSvg = svgElement.cloneNode(true);
             const svgWidth = 210;
@@ -823,15 +936,11 @@
             const fileName = `CV_${document.getElementById('fullName').value || 'document'}_${new Date().toISOString().slice(0,10)}.pdf`;
             pdf.save(fileName);
             
-            document.getElementById('successMsg').innerHTML = "✅ PDF файлът беше генериран и изтеглен успешно! 📄";
-            setTimeout(() => { 
-                const msgElem = document.getElementById('successMsg');
-                if (msgElem) msgElem.innerHTML = ""; 
-            }, 4000);
+            showSuccess("PDF файлът беше генериран и изтеглен успешно! 📄");
             
         } catch (error) {
             console.error('PDF generation error:', error);
-            document.getElementById('validationMsg').innerText = "❌ Грешка при генериране на PDF: " + error.message;
+            showError("Грешка при генериране на PDF: " + error.message);
         } finally {
             pdfBtn.innerText = originalText;
             pdfBtn.disabled = false;
@@ -859,6 +968,7 @@
     document.getElementById('previewHeader')?.addEventListener('click', togglePreview);
     
     initData();
+    setupPhotoUpload();
     updatePreview();
     
     window.addEventListener('resize', () => {
